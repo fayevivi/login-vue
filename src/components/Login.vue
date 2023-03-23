@@ -11,7 +11,7 @@
 <script>
 import { ref } from 'vue'
 import { auth } from '../firebase'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+// import { signInWithEmailAndPassword } from 'firebase/auth'
 
 export default {
   setup() {
