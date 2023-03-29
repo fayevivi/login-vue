@@ -8,53 +8,59 @@
   </form>
 </template>-->
 <template>
-    <h2>Weekly Coding Challenge #1: Sign in/up Form</h2>
-<div class="container" id="container" :class="{'right-panel-active':isSignUp}">
-	<div class="form-container sign-up-container">
-		<form action="#">
-			<h1>Create Account</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+	<div>
+		<div class="container" id="container" :class="{'right-panel-active':isSignUp}">
+			<div class="form-container sign-up-container">
+				<form action="">
+					<h1>Create Account</h1>
+					<div class="social-container">
+						<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+						<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+						<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+					</div>
+					<span>or use your email for registration</span>
+					<input type="text" placeholder="Name" v-model="signUpName"/>
+					<input type="email" placeholder="Email" v-model="signUpEmail"/>
+					<input type="password" placeholder="Password" v-model="signUpPassword"/>
+					<button @click.prevent="setSignUp()">Sign Up</button>
+				</form>
 			</div>
-			<span>or use your email for registration</span>
-			<input type="text" placeholder="Name" />
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
-			<button>Sign Up</button>
-		</form>
-	</div>
-	<div class="form-container sign-in-container">
-		<form action="#">
-			<h1>Sign in</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			<div class="form-container sign-in-container">
+				<form action="#">
+					<h1>Sign in</h1>
+					<div class="social-container">
+						<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+						<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+						<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+					</div>
+					<span>or use your account</span>
+					<input type="email" placeholder="Email" v-model="email"/>
+					<input type="password" placeholder="Password" v-model="password"/>
+					<a href="#">Forgot your password?</a>
+					<button @click.prevent="login()">Sign In</button>
+				</form>
 			</div>
-			<span>or use your account</span>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
-			<a href="#">Forgot your password?</a>
-			<button>Sign In</button>
-		</form>
-	</div>
-	<div class="overlay-container">
-		<div class="overlay">
-			<div class="overlay-panel overlay-left">
-				<h1>Welcome Back!</h1>
-				<p>To keep connected with us please login with your personal info</p>
-				<button class="ghost" id="signIn" @click="isSignUp = !isSignUp">Sign In</button>
-			</div>
-			<div class="overlay-panel overlay-right">
-				<h1>Hello, Friend!</h1>
-				<p>Enter your personal details and start journey with us</p>
-				<button class="ghost" id="signUp" @click="isSignUp = !isSignUp">Sign Up {{ this.changeClass }}</button>
+			<div class="overlay-container">
+				<div class="overlay">
+					<div class="overlay-panel overlay-left">
+						<h1>Welcome Back!</h1>
+						<p>To keep connected with us please login with your personal info</p>
+						<button class="ghost" id="signIn" @click="isSignUp = !isSignUp">Sign In</button>
+					</div>
+					<div class="overlay-panel overlay-right">
+						<h1>Hello, Friend!</h1>
+						<p>Enter your personal details and start journey with us</p>
+						<button class="ghost" id="signUp" @click="isSignUp = !isSignUp">Sign Up</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+
+	<!--<div>
+		<Router-link to="todoPage">TODO List</Router-link>
+		<RouterView />
+	</div>-->
 
 <footer>
 	<p>
@@ -69,13 +75,16 @@
 <script>
 import { ref } from 'vue'
 import { auth } from '../firebase'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword,  createUserWithEmailAndPassword} from 'firebase/auth'
 import $ from 'jquery'
+import { event } from 'jquery'
+import { RouterLink, RouterView } from 'vue-router'
+import router from '@/router' 
 
 export default {
   setup() {
-    const email = ref('')
-    const password = ref('')
+    const email = ref('');
+    const password = ref('');
 
     const login = async () => {
       console.log('auth', auth)
@@ -83,6 +92,13 @@ export default {
         const user = await signInWithEmailAndPassword(auth, email.value, password.value)
         // 登入成功，轉到其他頁面
         console.log('user', user)
+        console.log('user_tokenResponse', user._tokenResponse.registered)
+		// this.$router.push('/todoPage')
+		// const router = useRouter();
+			router.push({
+				path: '/todoPage'
+			})
+
       } catch (error) {
         // 登入失敗，顯示錯誤訊息
         console.error(error.message)
@@ -93,23 +109,42 @@ export default {
   },
 
   data() {
-      return {
-          message: "Hello Vue",
-          isSignUp: false,
-      };
+    return {
+      message: "Hello Vue",
+      isSignUp: false,
+      signUpName: "",
+      signUpEmail: "",
+      signUpPassword: "",
+	  isLogin: false,
+    };
   },
 
   methods:{
-    signUp(){
-      console.log('this is singUp btn')
-      this.changeClass = true
-      console.log('changeClass', this.changeClass)
-    },
-    a(){
-      console.log('aaaaaavv')
-    },
-    b(){
-      console.log('bbbbbbvv')
+    // signUpSwitch(){
+    //   console.log('this is singUp btn')
+    //   this.changeClass = true
+    //   console.log('changeClass', this.changeClass)
+    // },
+    // a(){
+    //   console.log('aaaaaavv')
+    // },
+    // b(){
+    //   console.log('bbbbbbvv')
+    // },
+    setSignUp(){
+      const signUp = async () => {
+        console.log('auth', auth)
+        try {
+          const user = await createUserWithEmailAndPassword(auth, this.signUpEmail, this.signUpPassword)
+          // 登入成功，轉到其他頁面
+          // console.log('user', user)
+          console.log('you did signUp')
+        } catch (error) {
+          // 登入失敗，顯示錯誤訊息
+          console.error(error.message)
+        }
+      }
+      signUp()
     }
   }
 }
@@ -217,6 +252,7 @@ input {
 	width: 768px;
 	max-width: 100%;
 	min-height: 480px;
+	margin: 0 auto;
 }
 
 .form-container {
