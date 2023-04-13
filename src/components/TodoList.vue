@@ -9,47 +9,30 @@ Github: https://github.com/tjgillweb/
 <div class="todoList">
         <div class="cover-img">
             <div class="cover-inner">
-                <h3>Vacation</h3>
-                <h3>{{ name }}的TODO</h3>
+                <!--<h3>Vacation</h3>-->
+                <h3>{{ name }}'TODO</h3>
             </div>
         </div>
         <div class="content">
             <form class="add">
-                <input type="text" name="add" placeholder="Add item...">
-                <div class="input-buttons">
-                    <a href="#" class="add-todo">
+                <input type="text" name="add" placeholder="Add item..." v-model="todo">
+                <button class="clickBtn" @click.prevent="addTodo()">click</button>
+                <div class="input-buttons" @click.prevent="addTodo()">
+                    <a href="" class="add-todo">
                         <i class="fas fa-plus add"></i>
                     </a>
                 </div>
             </form>
+            <div class="todoTotal">Total tasks: {{ todoList.length }}</div>
+            <div class="todoTotal">Total completes: {{ completeTotal2 }}</div>
             <ul class="todos">
-                <li>
-                    <input type="checkbox" id="todo_1" />
-                    <label for="todo_1">
-                        <span class="check"></span>Buy Flight Tickets
+                <li v-for="(todo, index) in todoList" :key="index">
+                    <input @click="completeTodo(index)" type="checkbox" :checked="todo.complete" id="todo_1" />
+                    <label for="todo_1" :class="{'completeLine':todo.complete}">
+                        <!--<span class="check"></span>-->
+                        {{todo.title}}
                     </label>
-                    <i class="far fa-trash-alt delete"></i>
-                </li>
-                <li>
-                    <input type="checkbox" id="todo_2" />
-                    <label for="todo_2">
-                        <span class="check"></span>Find AirBnB
-                    </label>
-                    <i class="far fa-trash-alt delete"></i>
-                </li>
-                <li>
-                    <input type="checkbox" id="todo_3" />
-                    <label for="todo_3">
-                        <span class="check"></span> Look up things to do
-                    </label>
-                    <i class="far fa-trash-alt delete"></i>
-                </li>
-                <li>
-                    <input type="checkbox" id="todo_4" />
-                    <label for="todo_4">
-                        <span class="check"></span> Passport
-                    </label>
-                    <i class="far fa-trash-alt delete"></i>
+                    <i @click="deleteTodo(index)" class="far fa-trash-alt delete"></i>
                 </li>
             </ul>
         </div>
@@ -80,11 +63,42 @@ Github: https://github.com/tjgillweb/
 <script setup>
 import { ref, computed } from "vue";
 
-const name = ref('vv')
+const name = ref('vv');
+const todo = ref('');
+const todoList = ref([]);
 
-// defineProps({
-//     name: 'vv',
-// })
+
+defineProps({
+    name2: 'vv',
+})
+
+function addTodo(){
+    todoList.value.unshift({
+        title: todo.value,
+        complete: false,
+    })
+    todo.value = "",
+    console.log('todoList', todoList)
+}
+
+const completeTodo = (index) => {
+    console.log('complete', todoList.value[index].complete)
+    todoList.value[index].complete = !todoList.value[index].complete;
+
+    console.log('completenew', todoList.value[index].complete)
+}
+
+const completeTotal = computed(() => {
+    return todoList.value.filter(todo => todo.complete).length;
+});
+
+const completeTotal2 = computed(function(){
+    return todoList.value.filter( function(todo){ return todo.complete }).length;
+})
+
+const deleteTodo = (index) => {
+    todoList.value.splice(index, 1)
+}
 
 
 </script>
@@ -191,12 +205,15 @@ textarea {
     font-size: 1.2rem;
     color: #6C717B;
   }
+  .clickBtn{
+    color: #f2606f !important;
+  }
 
   .input-buttons {
-    //border-bottom: 1px solid #8e979c;
-    //flex-basis: 20%;
-    //text-align: center;
-    //padding: 0px 0 0 10px;
+    // border-bottom: 1px solid #8e979c;
+    // flex-basis: 20%;
+    // text-align: center;
+    // padding: 0px 0 0 10px;
   }
 
   .input-buttons a {
@@ -230,10 +247,13 @@ textarea {
     cursor: pointer;
     padding: 5px 10px;
   }
-
-  input[type=checkbox] {
-    display: none
+  .completeLine{
+    text-decoration-line: line-through;
   }
+
+//   input[type=checkbox] {
+//     display: none
+//   }
 
   input[type=checkbox]+label {
     color: #6C717B;
@@ -250,69 +270,69 @@ textarea {
     background-color: #F4F7FA;
   }
 
-  input[type=checkbox]+label span.check {
-    left: 4px;
-    top: 50%;
-    position: absolute;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    display: block;
-    background: white;
-    border-radius: 3px;
-    border: 1px solid #b8bfcc;
-    box-shadow: 0 2px 3px #F0F4F8;
-  }
+//   input[type=checkbox]+label span.check {
+//     left: 4px;
+//     top: 50%;
+//     position: absolute;
+//     transform: translateY(-50%);
+//     width: 18px;
+//     height: 18px;
+//     display: block;
+//     background: white;
+//     border-radius: 3px;
+//     border: 1px solid #b8bfcc;
+//     box-shadow: 0 2px 3px #F0F4F8;
+//   }
 
-  input[type=checkbox]:checked+label {
-    color: #AEB7C6;
-    text-decoration: line-through;
-  }
+//   input[type=checkbox]:checked+label {
+//     color: #AEB7C6;
+//     text-decoration: line-through;
+//   }
 
-  input[type=checkbox]:checked+label span.check {
-    background-color: transparent;
-    border-color: transparent;
-    box-shadow: none;
-  }
+//   input[type=checkbox]:checked+label span.check {
+//     background-color: transparent;
+//     border-color: transparent;
+//     box-shadow: none;
+//   }
 
-  input[type=checkbox]+label span.check::after {
-    width: 100%;
-    height: 100%;
-    content: '';
-    display: block;
-    position: absolute;
-    background-image: url('https://tjgillweb.github.io/Vacation-Todo-App/images/tick.svg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 16px 16px;
-    transform: scale(0);
-    transition: transform 300ms cubic-bezier(0.3, 0, 0, 1.5);
-  }
+//   input[type=checkbox]+label span.check::after {
+//     width: 100%;
+//     height: 100%;
+//     content: '';
+//     display: block;
+//     position: absolute;
+//     background-image: url('https://tjgillweb.github.io/Vacation-Todo-App/images/tick.svg');
+//     background-repeat: no-repeat;
+//     background-position: center;
+//     background-size: 16px 16px;
+//     transform: scale(0);
+//     transition: transform 300ms cubic-bezier(0.3, 0, 0, 1.5);
+//   }
 
-  input[type=checkbox]:checked+label span.check::after {
-    transform: scale(1);
-  }
+//   input[type=checkbox]:checked+label span.check::after {
+//     transform: scale(1);
+//   }
 
-  input[type=checkbox]+label span.check::before {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: #8798AA;
+//   input[type=checkbox]+label span.check::before {
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     display: block;
+//     content: '';
+//     position: absolute;
+//     border-radius: 50%;
+//     background: #8798AA;
 
-    opacity: .8;
-    transform: scale(0);
-  }
+//     opacity: .8;
+//     transform: scale(0);
+//   }
 
-  input[type=checkbox]:checked+label span.check::before {
-    opacity: 0;
-    transform: scale(1.3);
-    transition: opacity 300ms cubic-bezier(0.2, 0, 0, 1), transform 400ms cubic-bezier(0.3, 0, 0, 1.4);
-  }
+//   input[type=checkbox]:checked+label span.check::before {
+//     opacity: 0;
+//     transform: scale(1.3);
+//     transition: opacity 300ms cubic-bezier(0.2, 0, 0, 1), transform 400ms cubic-bezier(0.3, 0, 0, 1.4);
+//   }
 }
 
 /** Social Icons **/
