@@ -70,6 +70,7 @@ const todoList = ref([]);
 
 defineProps({
     name2: 'vv',
+    test:'test'
 })
 
 function addTodo(){
