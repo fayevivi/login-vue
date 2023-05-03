@@ -28,11 +28,22 @@ Github: https://github.com/tjgillweb/
             <ul class="todos">
                 <li v-for="(todo, index) in todoList" :key="index">
                     <input @click="completeTodo(index)" type="checkbox" :checked="todo.complete" id="todo_1" />
-                    <label for="todo_1" :class="{'completeLine':todo.complete}">
+                    <label for="todo_1" :class="{'completeLine':todo.complete}" v-show="!todoList[index].isEdit">
                         <!--<span class="check"></span>-->
                         {{todo.title}}
                     </label>
+                    <div>
+                      <input 
+                        type="text" 
+                        v-show="todoList[index].isEdit" 
+                        :value="todo.title"
+                        @change="getChange(todo, $event)"
+                        >
+                      <button v-show="todoList[index].isEdit" @click="editTitle(todo)">confirm</button>
+                    </div>
                     <i @click="deleteTodo(index)" class="far fa-trash-alt delete"></i>
+                    <!--<i class="far fa-regular fa-pen-to-square"></i>why i can't add new icon from font-awsome-->
+                    <p @click="editTodo(index)">edit</p>
                 </li>
             </ul>
         </div>
@@ -66,6 +77,7 @@ import { ref, computed } from "vue";
 const name = ref('vv');
 const todo = ref('');
 const todoList = ref([]);
+let getChangeTitle = ""
 
 
 defineProps({
@@ -77,10 +89,12 @@ function addTodo(){
     todoList.value.unshift({
         title: todo.value,
         complete: false,
+        isEdit: false,
     })
     todo.value = "",
     console.log('todoList', todoList)
 }
+
 
 const completeTodo = (index) => {
     console.log('complete', todoList.value[index].complete)
@@ -88,6 +102,38 @@ const completeTodo = (index) => {
 
     console.log('completenew', todoList.value[index].complete)
 }
+
+//show edit input
+const editTodo = (index) => {
+  console.log('isEdit1', todoList.value[index].isEdit)
+  todoList.value[index].isEdit = true;
+  console.log('isEdit2', todoList.value[index].isEdit)
+
+}
+
+const editTitle = (todo) => {
+  todo.isEdit = false;
+  todo.title = getChangeTitle
+  console.log('todo222222======', todo)
+  console.log('todoList======', todoList)
+}
+
+const getChange = function(todo, e){
+  getChangeTitle = e.target.value;
+}
+
+const handleBlur = (todo, e) => {
+  // 若要使用handleBlur，則在input上改寫成＠blur=handleBlur(todo, $event)；離開input匡時會觸發
+  console.log('todoparam', todo)
+  todo.isEdit = false;
+  console.log('todoList', todoList)
+  console.log('todo', todo)
+  todo.title = e.target.value
+  console.log('todo222222', todo)
+  console.log('todoList', todoList)
+  console.log('e.target.value', e.target.value)
+}
+
 
 const completeTotal = computed(() => {
     return todoList.value.filter(todo => todo.complete).length;
@@ -98,8 +144,13 @@ const completeTotal2 = computed(function(){
 })
 
 const deleteTodo = (index) => {
+  console.log('jjjj')
     todoList.value.splice(index, 1)
 }
+
+// watch:{
+//   getChangeTitle()
+// }
 
 
 </script>
